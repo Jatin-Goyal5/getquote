@@ -13,8 +13,8 @@ class quoteui extends StatefulWidget {
 }
 
 class _quoteuiState extends State<quoteui> {
-  @override
-  var _isInit = true;
+  String tr = "";
+  var _checkState= true;
   var _isLoading = false;
   var rng = new Random();
 
@@ -32,41 +32,45 @@ class _quoteuiState extends State<quoteui> {
 
   @override
   void didChangeDependencies() {
-    if (_isInit) {
+    if (_checkState) {
       setState(() {
         _isLoading = true;
       });
-      final res = Provider.of<Quotes>(context).fetchAndSetProducts().then((_) {
+      Provider.of<Quotes>(context).fetchAndSetProducts().then((_) {
         setState(() {
+          _checkState = false;
           _isLoading = false;
         });
       });
     }
-    _isInit = false;
+    _checkState = false;
     super.didChangeDependencies();
   }
 
   @override
   Widget build(BuildContext context) {
 
-    final quotes = Provider.of<Quotes>(context);
+    final myquotes = Provider.of<Quotes>(context);
 
-    List<String> my=quotes.getall();
-    String tr = my[rng.nextInt(150)];
+    List<String> my=myquotes.quotes;
+  
+  
 
     return Scaffold(
-      backgroundColor:Colors.amber ,
+      backgroundColor:myquotes.color ,
       body: Center(
         child: new FlatButton(
-          child: _isLoading?CircularProgressIndicator():GradientText(
-            tr,gradient: quotes.getColor(),
+          child: _isLoading?Center(child: CircularProgressIndicator()):Text(
+            my[rng.nextInt(my.length)],
             style: TextStyle(
+              color:  Colors.white,
               fontSize: 36.0,
               fontStyle: FontStyle.italic
             ),
           ),
           onPressed: (){
             setState(() {
+              myquotes.getColor();
               tr=my[rng.nextInt(150)];
             });
             },
